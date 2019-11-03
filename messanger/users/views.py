@@ -47,7 +47,7 @@ def user_seek_by_name(request, user_name):
         user = findings.get()
         # redirect to user profile
         return HttpResponse('Placeholder for found user profile')
-    except User.MultipleObjectsReturned:
+    except User.MultipleObjectsReturned: # is it possible to have same names at all?
         # display list of found profiles
         return HttpResponse('Placeholder for found user profiles list')
     except User.DoesNotExist:
