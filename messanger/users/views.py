@@ -18,7 +18,14 @@ def user_self(request):
 
 def user_by_id(request, user_id):
     if request.method == 'GET':
-        return JsonResponse({'App': 'users', 'Placeholder_for': 'user\'s profile', 'user_id': user_id, })
+        target = User.objects.filter(id=user_id).values('id', 'username')
+        try:
+            return JsonResponse({'App': 'users', 'Placeholder_for': 'user\'s profile', 'user_id': user_id,
+                'user': target[0]
+            })
+        except IndexError:
+            return JsonResponse({'User search result': 'No such user found'})
+
     else:
         return HttpResponseNotAllowed(['GET'])
 
@@ -28,8 +35,8 @@ def user_start_chat(request, user_id):
         # then, check for chat already present
         # otherwise, start new chat
 
-        target = User.objects.filter(pk=user_id).get()
-        user_self = User.objects.filter(pk=1).get() # change to being the initiating user
+        target = User.objects.filter(id=user_id).get()
+        user_self = User.objects.filter(id=1).get() # change to being the initiating user
 
         chat_obj = Chat(name='test_chat') # look about naming
         chat_obj.save()
@@ -37,7 +44,7 @@ def user_start_chat(request, user_id):
         chat_obj.members.add(user_self)
         # chat_obj.save()
 
-        return HttpResponse('Placeholder response for new chat being started')
+        return JsonResponse({'New chat': chat_obj.name, 'chat id': chat_obj.id})
     else:
         return HttpResponseNotAllowed(['GET'])
 
