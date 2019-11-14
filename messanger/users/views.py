@@ -10,13 +10,13 @@ from chats.models import Member
 
 # Create your views here.
 
-def user_self(request):
+def user_self(request): # display user's own profile
     if request.method == 'GET':
         return JsonResponse({'App': 'users', 'Placeholder_for': 'user\'s own profile', })
     else:
         return HttpResponseNotAllowed(['GET'])
 
-def user_by_id(request, user_id):
+def user_by_id(request, user_id): # display user by id
     if request.method == 'GET':
         target = User.objects.filter(id=user_id).values('id', 'username')
         try:
@@ -29,7 +29,7 @@ def user_by_id(request, user_id):
     else:
         return HttpResponseNotAllowed(['GET'])
 
-def user_start_chat(request, user_id):
+def user_start_chat(request, user_id): # create one-on-one chat
     if request.method == 'GET':
         # add check for user trying to chat with himself
         # then, check for chat already present
@@ -48,7 +48,7 @@ def user_start_chat(request, user_id):
     else:
         return HttpResponseNotAllowed(['GET'])
 
-def user_seek_by_name(request, user_name):
+def user_seek_by_name(request, user_name): # search for user by name, exact match only
     findings = User.objects.filter(username=user_name)
     try:
         user = findings.get()
