@@ -25,7 +25,7 @@ SECRET_KEY = '6=-hq_bc-_st=2+*yb0)xgs%n*&kb_*-p9)_hedy+7gxq3+-9t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', '127.0.0.1']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'chats',
     'users',
+    'attachments',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +123,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_ENDPOINT_URL = 'http://hb.bizmrg.com'
+AWS_ACCESS_KEY_ID = 'tHwmMmsEpYjEpxBRQ3FefU'
+AWS_SECRET_ACCESS_KEY = 'gE8MpxyfXway76BfY2iwhrkbgwziwcjqF2PAn5612PGL'
+AWS_STORAGE_BUCKET_NAME = 'messanger_zemlyanoy'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
+from django.db.models import Q
 
 from users.models import User
 from chats.models import Chat
@@ -49,11 +50,13 @@ def user_start_chat(request, user_id): # create one-on-one chat
         return HttpResponseNotAllowed(['GET'])
 
 def user_seek_by_name(request, user_name): # search for user by name, exact match only
-    findings = User.objects.filter(username=user_name)
+    findings = User.objects.filter(
+        Q(username__contains=user_name) | Q(first_name__contains=user_name) | Q(last_name__contains=user_name)
+    )
     try:
         user = findings.get()
         # redirect to user profile
-        return HttpResponse('Placeholder for found user profile')
+        return JsonResponse({'username': user.username, 'id': user.id})
     except User.MultipleObjectsReturned: # is it possible to have same names at all?
         # display list of found profiles
         return HttpResponse('Placeholder for found user profiles list')
