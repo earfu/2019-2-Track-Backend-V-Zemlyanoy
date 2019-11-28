@@ -1,16 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.db.models import Q
+from django.contrib.auth import authenticate, login, logout
 
 from users.models import User
 from chats.models import Chat
 from chats.models import Member
 
 # Create your views here.
+def login_required(view):
+    def wrap(*args, **kwargs):
+        request = args[0]
+        user = request.user
+        if user.is_authenticated:
+            return view(*args, **kwargs)
+        else:
+            return redirect('login-user')
+    return wrap
 
+@login_required
 def user_self(request): # display user's own profile
     if request.method == 'GET':
         return JsonResponse({'App': 'users', 'Placeholder_for': 'user\'s own profile', })
@@ -30,6 +41,7 @@ def user_by_id(request, user_id): # display user by id
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@login_required
 def user_start_chat(request, user_id): # create one-on-one chat
     if request.method == 'GET':
         # add check for user trying to chat with himself
@@ -37,7 +49,7 @@ def user_start_chat(request, user_id): # create one-on-one chat
         # otherwise, start new chat
 
         target = User.objects.filter(id=user_id).get()
-        user_self = User.objects.filter(id=1).get() # change to being the initiating user
+        user_self = request.user # change to being the initiating user
 
         chat_obj = Chat(name='test_chat') # look about naming
         chat_obj.save()
@@ -63,3 +75,12 @@ def user_seek_by_name(request, user_name): # search for user by name, exact matc
     except User.DoesNotExist:
         return HttpResponse('Placeholder for no such user')
 
+def login_user(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user=authenticate(request, username, password)
+    if user is not None:
+        login(user, request)
+        return redirect()
+    else:
+        return HttpResponse('Invalid credentials')

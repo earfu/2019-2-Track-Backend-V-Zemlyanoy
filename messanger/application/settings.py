@@ -129,6 +129,11 @@ AWS_ACCESS_KEY_ID = 'tHwmMmsEpYjEpxBRQ3FefU'
 AWS_SECRET_ACCESS_KEY = 'gE8MpxyfXway76BfY2iwhrkbgwziwcjqF2PAn5612PGL'
 AWS_STORAGE_BUCKET_NAME = 'messanger_zemlyanoy'
 
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 

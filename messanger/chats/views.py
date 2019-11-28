@@ -9,12 +9,16 @@ from chats.models import Chat
 from chats.models import Message
 from chats.forms import MessageSendForm
 from chats.forms import ChatCreateForm
+from attachments.views import attach
+from attachments.models import Attachment
+from users.views import login_required
 
 # Create your views here.
 
+@login_required
 def index(request): # display chat list for current user
     if request.method == 'GET':
-        user = User.objects.filter(username='useradm').get() # change to user's self later
+        user = request.user # change to user's self later
         chat_list = Chat.objects.filter(member__user_id=user.id).values('id', 'name')
         # then display chat list
         return JsonResponse({'App': 'chats', 'Placeholder_for': 'chat list screen',
@@ -22,11 +26,12 @@ def index(request): # display chat list for current user
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@login_required
 def chat_messages(request, chat_id): # display chat messages list
     if request.method == 'GET':
-        user_id = 1 # for now
+        user = request.user # for now
         try:
-            chat = Chat.objects.filter(id=chat_id, member__user_id=user_id).get()
+            chat = Chat.objects.filter(id=chat_id, member__user_id=user.id).get()
             return JsonResponse({
                 'App': 'chats',
                 'Placeholder_for': 'chat screen',
@@ -40,11 +45,12 @@ def chat_messages(request, chat_id): # display chat messages list
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@login_required
 def chat_read_message(request, chat_id, message_id): # display message text
     if request.method == 'GET':
-        user_id = 1 # for now
+        user = request.user # for now
         try:
-            chat = Chat.objects.filter(id=chat_id).filter(member__user_id=user_id).get()
+            chat = Chat.objects.filter(id=chat_id).filter(member__user_id=user.id).get()
             message = Message.objects.filter(id=message_id, chat_id=chat.id).get()
             return JsonResponse({
                 'App': 'chats',
@@ -52,6 +58,7 @@ def chat_read_message(request, chat_id, message_id): # display message text
                 'chat_id': chat_id,
                 'message_id': message_id,
                 'message text': message.content,
+                'message attachments:': list(message.attachment_set.values('id')),
             })
         except Message.DoesNotExist:
             return JsonResponse({
@@ -65,12 +72,12 @@ def chat_read_message(request, chat_id, message_id): # display message text
     else:
         return HttpResponseNotAllowed(['GET'])
 
-
+@login_required
 def chat_detail(request, chat_id): # display member list of chat
     if request.method == 'GET':
-        user_id = 1 # for now
+        user = request.user # for now
         try:
-            chat = Chat.objects.filter(id=chat_id).filter(member__user_id=user_id).get()
+            chat = Chat.objects.filter(id=chat_id).filter(member__user_id=user.id).get()
             return JsonResponse({
                 'App': 'chats',
                 'Placeholder_for': 'chat details screen',
@@ -84,11 +91,12 @@ def chat_detail(request, chat_id): # display member list of chat
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@login_required
 def create_chat(request): # not used yet
     if request.method == 'GET':
         return HttpResponse('Here be general chat creation page?')
     elif request.method == 'POST':
-        user = User.objects.filter(id=1).get() # for now
+        user = request.user # for now
         form = ChatCreateForm(request.POST)
         if form.is_valid():
             chat = form.save()
@@ -107,10 +115,12 @@ def default_index(request): # the default server page
     else:
         return HttpResponseNotAllowed(['GET'])
 
+#@login_required
 def chat_send_message(request, chat_id):
     if request.method == 'POST':
-        user_id = 1 # for now
-        msg = Message(user_id=user_id, chat_id=chat_id)
+        user = User.objects.filter(id=1).get()
+        msg = Message(user_id=user.id, chat_id=chat_id)
+
         form = MessageSendForm(request.POST, instance=msg)
         if form.is_valid():
             form.save(commit=True)

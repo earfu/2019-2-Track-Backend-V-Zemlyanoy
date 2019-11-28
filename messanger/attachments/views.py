@@ -14,10 +14,10 @@ MCS_SECRET_KEY = 'gE8MpxyfXway76BfY2iwhrkbgwziwcjqF2PAn5612PGL'
 
 def attach(filename):
 
-    mime = open(filename, mode='b')
-    magic.from_buffer(mime.read(), mime=True)
-    if (not mime):
-        return
+    mime = open(filename, mode='rb')
+   # magic.from_buffer(mime.read(), mime=True)
+    #if (not mime):
+    #    return
 
 
     session = boto3.session.Session()
@@ -27,4 +27,5 @@ def attach(filename):
         aws_access_key_id=MCS_ACCESS_KEY,
         aws_secret_access_key=MCS_SECRET_KEY,
         )
-    s3_client.put_object(Bucket='messanger_zemlyanoy', Key=str(hash(mime.name)), Body=mime)
+    byts = mime.read()
+    return s3_client.put_object(Bucket='messanger_zemlyanoy', Key=(str(hash(mime.name)) + mime.name), Body=byts )
