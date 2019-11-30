@@ -82,10 +82,13 @@ AUTH_USER_MODEL = 'users.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'quack_db',
-        'USER': 'quack',
-        'PASSWORD': 'Not_a_duck.',
-        'HOST': '127.0.0.1',
+#        'NAME': 'quack_db',
+ #       'USER': 'quack',
+  #      'PASSWORD': 'Not_a_duck.',
+   #     'HOST': '127.0.0.1',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'database',
         'PORT': '5432',
     }
 }

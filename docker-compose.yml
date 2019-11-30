@@ -1,0 +1,16 @@
+version: "2.1"
+
+services:
+  database:
+    image: postgres:10
+    expose: 
+      - "5432"
+  django:
+    image: django:test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./messanger:/messanger
+    command: python messanger/manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - database

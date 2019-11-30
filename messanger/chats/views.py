@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
+from django.views.decorators.csrf import csrf_exempt
 
 from users.models import User
 from chats.models import Chat
@@ -36,7 +37,7 @@ def chat_messages(request, chat_id): # display chat messages list
                 'App': 'chats',
                 'Placeholder_for': 'chat screen',
                 'chat_id': chat_id,
-                'messages': list(Message.objects.filter(chat_id=chat_id).values('id', 'user')) # no date, no content
+                'messages': list(Message.objects.filter(chat_id=chat_id).values('id', 'user', 'content')) # no date, no content
             })
         except Chat.DoesNotExist:
             return JsonResponse({
@@ -116,6 +117,7 @@ def default_index(request): # the default server page
         return HttpResponseNotAllowed(['GET'])
 
 #@login_required
+@csrf_exempt
 def chat_send_message(request, chat_id):
     if request.method == 'POST':
         user = User.objects.filter(id=1).get()
