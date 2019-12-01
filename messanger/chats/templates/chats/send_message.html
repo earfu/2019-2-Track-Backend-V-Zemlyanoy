@@ -1,0 +1,9 @@
+{% if form.is_multipart %}
+    <form enctype="multipart/form-data" method="post" action="/chats/{{chat_id}}/send_message/">
+{% else %}
+    <form method="post" action="/chats/{{chat_id}}/send_message/">
+{% endif %}
+{% csrf_token %}
+{{ form }}
+<button type="submit" action="/chats/{{chat_id}}/send_message/">Send</button>
+</form>

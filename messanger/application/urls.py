@@ -19,12 +19,12 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth import login, logout
 
 from chats.views import default_index
-from users.views import login_user
+from users.views import login_user, logout_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_user, name='login-user'),
-    path('logout/', auth_views.LogoutView.as_view(), 'logout'),
+    path('logout/', logout_user, name='logout-user'),
     path('index/', default_index), # should not be in chats urls file
     path('chats/', include('chats.urls')),
     path('contacts/', include('contacts.urls')),

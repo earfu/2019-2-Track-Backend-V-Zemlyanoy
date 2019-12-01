@@ -5,10 +5,13 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 
 from users.models import User
 from chats.models import Chat
 from chats.models import Member
+from users.forms import UserNewForm
+from users.forms import UserLoginForm
 
 # Create your views here.
 def login_required(view):
@@ -76,11 +79,39 @@ def user_seek_by_name(request, user_name): # search for user by name, exact matc
         return HttpResponse('Placeholder for no such user')
 
 def login_user(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user=authenticate(request, username, password)
-    if user is not None:
-        login(user, request)
-        return redirect()
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user=authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/chats/index/')
+        else:
+            return HttpResponse('Invalid credentials')
+    elif request.method == 'GET':
+        #return render(request, 'users/login_user.html', {'form': UserLoginForm()})
+        return render(request, 'users/login_user.html', {'form': AuthenticationForm()})
     else:
-        return HttpResponse('Invalid credentials')
+        return HttpResponseNotAllowed(['GET', 'POST'])
+
+@login_required
+def logout_user(request):
+    if request.method == 'GET':
+        logout(request)
+        return redirect('/login/')
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+def user_new(request):
+    if request.method == 'GET':
+        return render(request, 'users/new_user.html', {'form': UserNewForm()})
+    elif request.method == 'POST':
+        form = UserNewForm(request.POST)
+        if form.is_valid():
+            #user = User.objects.create_user(form.fields['username'], password=form.fields['password'])
+            user = form.save(commit=True)
+            return JsonResponse({'User creation:': 'success', 'new user id:': user.id})
+        else:
+            return JsonResponse({'User creation:': 'invalid form data', 'Errors': list(form.errors.as_data())})
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])

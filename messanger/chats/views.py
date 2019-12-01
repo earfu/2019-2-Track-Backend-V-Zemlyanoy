@@ -116,11 +116,12 @@ def default_index(request): # the default server page
     else:
         return HttpResponseNotAllowed(['GET'])
 
-#@login_required
-@csrf_exempt
+@login_required
+#@csrf_exempt
 def chat_send_message(request, chat_id):
     if request.method == 'POST':
-        user = User.objects.filter(id=1).get()
+        #user = User.objects.filter(id=1).get()
+        user = request.user
         msg = Message(user_id=user.id, chat_id=chat_id)
 
         form = MessageSendForm(request.POST, instance=msg)
@@ -130,9 +131,6 @@ def chat_send_message(request, chat_id):
         else:
             return JsonResponse({'Message sending result': 'invalid form'})
     elif request.method == 'GET':
-        return JsonResponse({
-            'Message sending page': 'Sorry, no html form here',
-            'What to do': 'Send POST request some other way'
-            })
+        return render(request, 'chats/send_message.html', {'form': MessageSendForm(), 'chat_id': chat_id})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
