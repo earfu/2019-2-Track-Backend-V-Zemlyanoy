@@ -5,5 +5,5 @@ from django.urls import include
 from contacts.views import *
 
 urlpatterns = [
-    path('index/', index, name='index'),
+    path('index/', index, name='contacts-index'),
 ]

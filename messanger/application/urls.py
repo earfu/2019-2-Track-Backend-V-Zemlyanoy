@@ -30,4 +30,5 @@ urlpatterns = [
     path('contacts/', include('contacts.urls')),
     path('users/', include('users.urls')),
     path('attachments/', include('attachments.urls')),
+    path('oauth/', include('social_django.urls', namespace='social')),
 ]

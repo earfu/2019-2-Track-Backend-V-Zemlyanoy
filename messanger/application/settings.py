@@ -51,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'application.urls'
@@ -66,6 +68,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -133,8 +138,11 @@ AWS_ACCESS_KEY_ID = 'tHwmMmsEpYjEpxBRQ3FefU'
 AWS_SECRET_ACCESS_KEY = 'gE8MpxyfXway76BfY2iwhrkbgwziwcjqF2PAn5612PGL'
 AWS_STORAGE_BUCKET_NAME = 'messanger_zemlyanoy'
 
+SOCIAL_AUTH_GITHUB_KEY = 'a4b206e71c1065dfca76'
+SOCIAL_AUTH_GITHUB_SECRET = 'c6486a03b357ebcf911fbc345cfa7bf00cfe607c'
+
 LOGIN_URL = 'login-user'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'chats-index'
 LOGOUT_URL = 'logout-user'
 LOGOUT_REDIRECT_URL = 'login'
 
@@ -142,6 +150,7 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.linkedin.LinkedinOAuth2',
     'social_core.backends.instagram.InstagramOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
