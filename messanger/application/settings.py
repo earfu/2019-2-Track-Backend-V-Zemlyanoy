@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'chats',
     'users',
     'attachments',
@@ -132,10 +133,17 @@ AWS_ACCESS_KEY_ID = 'tHwmMmsEpYjEpxBRQ3FefU'
 AWS_SECRET_ACCESS_KEY = 'gE8MpxyfXway76BfY2iwhrkbgwziwcjqF2PAn5612PGL'
 AWS_STORAGE_BUCKET_NAME = 'messanger_zemlyanoy'
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'login-user'
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_URL = 'logout'
+LOGOUT_URL = 'logout-user'
 LOGOUT_REDIRECT_URL = 'login'
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.instagram.InstagramOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

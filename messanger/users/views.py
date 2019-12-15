@@ -6,6 +6,7 @@ from django.http import HttpResponseNotAllowed
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 
 from users.models import User
 from chats.models import Chat
@@ -14,15 +15,15 @@ from users.forms import UserNewForm
 from users.forms import UserLoginForm
 
 # Create your views here.
-def login_required(view):
-    def wrap(*args, **kwargs):
-        request = args[0]
-        user = request.user
-        if user.is_authenticated:
-            return view(*args, **kwargs)
-        else:
-            return redirect('login-user')
-    return wrap
+#def login_required(view):
+ #   def wrap(*args, **kwargs):
+  #      request = args[0]
+   #     user = request.user
+    #    if user.is_authenticated:
+     #       return view(*args, **kwargs)
+      #  else:
+       #     return redirect('login-user')
+    #return wrap
 
 @login_required
 def user_self(request): # display user's own profile
