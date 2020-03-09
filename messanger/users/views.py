@@ -8,11 +8,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+
 from users.models import User
 from chats.models import Chat
 from chats.models import Member
 from users.forms import UserNewForm
 from users.forms import UserLoginForm
+
+from users.serializers import UserSerializer
 
 # Create your views here.
 #def login_required(view):
@@ -116,3 +121,11 @@ def user_new(request):
             return JsonResponse({'User creation:': 'invalid form data', 'Errors': list(form.errors.as_data())})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+
+class UserViewSet(ModelViewSet):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.all()

@@ -1,18 +1,22 @@
 from django.shortcuts import render
-
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+
 from users.models import User
-from chats.models import Chat
-from chats.models import Message
-from chats.forms import MessageSendForm
-from chats.forms import ChatCreateForm
+from chats.models import Chat, Message
+from chats.forms import MessageSendForm, ChatCreateForm
 from attachments.views import attach
 from attachments.models import Attachment
 from users.views import login_required
+
+from chats.serializers import ChatSerializer, MessageSerializer
 
 # Create your views here.
 
@@ -135,3 +139,54 @@ def chat_send_message(request, chat_id):
         return render(request, 'chats/send_message.html', {'form': MessageSendForm(), 'chat_id': chat_id})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+#class Rest_Chat_List(APIView):
+ #   serializer_class = ChatSerializer
+  #  def get_queryset(self):
+   #     return Chat.objects.filter(member__user_id=self.request.user.id).all()
+   # def get(self, request):
+    #    return Response({'chats': serializer.data})
+
+class ChatViewSet(ModelViewSet):
+
+    serializer_class = ChatSerializer
+
+    def get_queryset(self):
+        return Chat.objects.filter(member__user_id=self.request.user.id).all().order_by('id')
+
+    def retrieve(self, request, pk=None):
+        try:
+            queryset = Chat.objects.filter(member__user_id=self.request.user.id, id=pk).get()
+        except Chat.DoesNotExist:
+            return Response({'Chat detail': 'No such chat, or you are not a member'})
+        except ValueError:
+            return Response({'Chat detail': 'Wrong value for chat id'})
+        serializer = self.serializer_class(queryset)
+       # serializer.build_relational_field('messages', ('','',True,'Message'))
+        return Response(serializer.data)
+
+class MessageViewSet(ModelViewSet):
+
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        return Message.objects.filter(chat__member__user_id=self.request.user.id).all().order_by('added_at')
+
+    @action(methods=['GET'], detail=True, url_path='all')
+    def chat_list(self, request, pk=None):
+        if pk is None:
+            #return Response(self.serializer_class(self.get_queryset(), many=True).data)
+            return Response({'Chat message list': 'No chat specified'})
+        else:
+            try:
+                chat = Chat.objects.filter(id=pk).get()
+                chat.members.filter(id=request.user.id).get()
+            except User.DoesNotExist:
+                return Response({'Chat message list': 'You are not in this chat'})
+            except Chat.DoesNotExist:
+                return Response({'Chat message list': 'No such chat'})
+
+            queryset = Message.objects.filter(chat_id=pk).all().order_by('added_at')
+            serializer = self.serializer_class(queryset,many=True)
+            return Response(serializer.data)

@@ -18,8 +18,16 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import login, logout
 
-from chats.views import default_index
+from rest_framework import routers
+
+from chats.views import default_index, ChatViewSet, MessageViewSet
+from users.views import UserViewSet
 from users.views import login_user, logout_user
+
+router = routers.DefaultRouter()
+router.register(r'chats', ChatViewSet, basename='chat')
+router.register(r'messages', MessageViewSet, basename='message')
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +39,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('attachments/', include('attachments.urls')),
     path('oauth/', include('social_django.urls', namespace='social')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # DRF login/logout
+    path('api/', include(router.urls)), # all DRF default routing
+#    path('api/chats/', Rest_Chat_List.as_view())
 ]

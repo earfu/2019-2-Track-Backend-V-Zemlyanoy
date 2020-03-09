@@ -4,6 +4,10 @@ build:
 up:
 	docker-compose up -d
 
+anew:
+	docker-compose down
+	docker-compose build
+
 migrate: up
 	docker-compose exec django python3 messanger/manage.py makemigrations	
 	docker-compose exec django python3 messanger/manage.py migrate
