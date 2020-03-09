@@ -91,7 +91,7 @@ DATABASES = {
 #        'NAME': 'quack_db',
  #       'USER': 'quack',
   #      'PASSWORD': 'Not_a_duck.',
-   #     'HOST': '127.0.0.1',
+        'HOST': '127.0.0.1',
         'NAME': 'postgres',
         'USER': 'postgres',
         'HOST': 'database',

@@ -37,7 +37,8 @@ def chat_messages(request, chat_id): # display chat messages list
                 'App': 'chats',
                 'Placeholder_for': 'chat screen',
                 'chat_id': chat_id,
-                'messages': list(Message.objects.filter(chat_id=chat_id).values('id', 'user', 'content')) # no date, no content
+                'messages':
+                    list(Message.objects.filter(chat_id=chat_id).values('id', 'user', 'content').order_by('added_at'))
             })
         except Chat.DoesNotExist:
             return JsonResponse({
