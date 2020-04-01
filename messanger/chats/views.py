@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,6 +32,7 @@ def index(request): # display chat list for current user
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@cache_page(60*15)
 @login_required
 def chat_messages(request, chat_id): # display chat messages list
     if request.method == 'GET':
@@ -159,9 +161,9 @@ class ChatViewSet(ModelViewSet):
         try:
             queryset = Chat.objects.filter(member__user_id=self.request.user.id, id=pk).get()
         except Chat.DoesNotExist:
-            return Response({'Chat detail': 'No such chat, or you are not a member'})
+            return Response({'Chat detail': 'No such chat, or you are not a member'}, status=404)
         except ValueError:
-            return Response({'Chat detail': 'Wrong value for chat id'})
+            return Response({'Chat detail': 'Wrong value for chat id'}, status=404)
         serializer = self.serializer_class(queryset)
        # serializer.build_relational_field('messages', ('','',True,'Message'))
         return Response(serializer.data)
@@ -177,15 +179,15 @@ class MessageViewSet(ModelViewSet):
     def chat_list(self, request, pk=None):
         if pk is None:
             #return Response(self.serializer_class(self.get_queryset(), many=True).data)
-            return Response({'Chat message list': 'No chat specified'})
+            return Response({'Chat message list': 'No chat specified'}, status=404)
         else:
             try:
                 chat = Chat.objects.filter(id=pk).get()
                 chat.members.filter(id=request.user.id).get()
             except User.DoesNotExist:
-                return Response({'Chat message list': 'You are not in this chat'})
+                return Response({'Chat message list': 'No such chat, or you are not a member'}, status=404)
             except Chat.DoesNotExist:
-                return Response({'Chat message list': 'No such chat'})
+                return Response({'Chat message list': 'No such chat, or you are not a member'}, status=404)
 
             queryset = Message.objects.filter(chat_id=pk).all().order_by('added_at')
             serializer = self.serializer_class(queryset,many=True)

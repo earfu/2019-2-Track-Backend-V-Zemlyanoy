@@ -1,3 +1,6 @@
+freeze:
+	pip freeze > ./messanger/requirements.txt
+
 build:
 	docker-compose build
 
@@ -35,3 +38,9 @@ coverage_report: up
 
 selenium: up
 	docker-compose exec django python3 messanger/manage.py test chats.selenium_tests.SeleniumTestTry.test_login
+
+profile:
+	python3 -m cProfile -o "profiled.txt" messanger/manage.py runserver
+
+profiled:
+	python3 -i print_profiled.py

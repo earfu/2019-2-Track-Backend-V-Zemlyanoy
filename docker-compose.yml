@@ -14,3 +14,11 @@ services:
     command: python messanger/manage.py runserver 0.0.0.0:8000
     depends_on:
       - database
+  events:
+    image: centrifugo/centrifugo:latest
+    expose:
+      - "8001"
+    ports:
+      - "8001:8001"
+    depends_on:
+      - django

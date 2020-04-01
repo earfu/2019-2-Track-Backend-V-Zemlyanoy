@@ -3,6 +3,8 @@ from faker import Faker
 from users.models import User
 from chats.models import Chat, Member, Message
 
+# not to be executed outside Django shell
+
 class UserFactory(factory.Factory):
     class Meta:
         model = User
@@ -48,6 +50,3 @@ def fix():
     fix_users()
     fix_chats()
     fix_messages()
-
-if (__name__ == 'main'):
-    fix()

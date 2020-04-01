@@ -43,3 +43,7 @@ urlpatterns = [
     path('api/', include(router.urls)), # all DRF default routing
 #    path('api/chats/', Rest_Chat_List.as_view())
 ]
+
+urlpatterns += [
+    path('captcha/', include('captcha.urls'), name='captcha'),
+]

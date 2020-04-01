@@ -1,4 +1,5 @@
 from django.test import Client, TestCase
+from django.urls import reverse as url_reverse
 from users.models import User
 from chats.models import Chat, Message
 from faker import Faker
@@ -37,30 +38,42 @@ class Test_Chat(TestCase):
         chat_ids[2] = chat2.id
 
 
-    def test_user_self(self):
-        url = '/users/user/'
+    def test_user_self_unlogged(self):
+        url = url_reverse('user_self')
         response_1st = self.client.get(url)
         self.assertIn(response_1st.status_code, [302])
         self.assertEqual(response_1st['Location'], '/login/?next=' + url)
-        response_login = self.client.post('/login/', {'username': user_names[1], 'password': user_passwords[1]})
-        self.assertIn(response_login.status_code, [200, 302])
+
+    def test_user_self_post(self):
+        url = url_reverse('user_self')
+        self.client.login(username=user_names[1],password=user_passwords[1])
         response_2nd = self.client.post(url, {})
         self.assertEqual(response_2nd.status_code, 405)
+
+    def test_user_self_get(self):
+        url = url_reverse('user_self')
+        self.client.login(username=user_names[1],password=user_passwords[1])
         response_3rd = self.client.get(url)
         self.assertIn(response_3rd.status_code, [200, 302])
 
-    def test_user_by_id(self):
-        url = '/users/' + str(user_ids[2]) + '/' # seek user2 instead of self
+    def test_user_by_id_post(self):
+        url = url_reverse('user_by_id', kwargs={'user_id': user_ids[2]})
         response_1st = self.client.post(url, {})
         self.assertEqual(response_1st.status_code, 405)
+
+    def test_user_by_id_get(self):
+        url = url_reverse('user_by_id', kwargs={'user_id': user_ids[2]})
         response_2nd = self.client.get(url)
         self.assertIn(response_2nd.status_code, [200, 302])
         self.assertDictEqual(response_2nd.json()['user'], {'id': user_ids[2], 'username': user_names[2]})
 
-    def test_user_new(self):
-        url = '/users/new/'
+    def test_user_new_get(self):
+        url = url_reverse('user_new')
         response_1st = self.client.get(url)
         self.assertEqual(len(response_1st.templates), 10)
         self.assertEqual(response_1st.templates[0].name, 'users/new_user.html')
+
+    def test_user_new_post(self):
+        url = url_reverse('user_new')
         response_2nd = self.client.post(url, {})
         self.assertEqual(response_2nd.json()['User creation:'], 'invalid form data')

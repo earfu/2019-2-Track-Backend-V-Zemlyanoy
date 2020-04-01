@@ -14,8 +14,7 @@ from rest_framework.viewsets import ModelViewSet
 from users.models import User
 from chats.models import Chat
 from chats.models import Member
-from users.forms import UserNewForm
-from users.forms import UserLoginForm
+from users.forms import UserNewForm, UserLoginForm
 
 from users.serializers import UserSerializer
 
@@ -95,8 +94,8 @@ def login_user(request):
         else:
             return HttpResponse('Invalid credentials')
     elif request.method == 'GET':
-        #return render(request, 'users/login_user.html', {'form': UserLoginForm()})
-        return render(request, 'users/login_user.html', {'form': AuthenticationForm()})
+        return render(request, 'users/login_user.html', {'form': UserLoginForm()})
+        #return render(request, 'users/login_user.html', {'form': AuthenticationForm()})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
