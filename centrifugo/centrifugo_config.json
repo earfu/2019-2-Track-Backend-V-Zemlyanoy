@@ -1,0 +1,14 @@
+{
+  "token_hmac_secret_key": "ebec560d-b7fe-4ce4-ac02-dcfaf25549ec",
+  "admin_password": "6254cacf-7bd1-46f3-bbcd-2fa20bcea090",
+  "admin_secret": "dbcb9e3f-f228-4472-895d-85defe79fa5c",
+  "api_key": "f58a4d6f-a947-4b01-af8a-ded3eafd640a",
+  "address": "0.0.0.0",
+  "port": 8001,
+  "presence": "true",
+  "presence_disable_for_client": "true",
+  "history_size": 10,
+  "log_file": "cent_log.log",
+  "log_level": "info"
+
+}

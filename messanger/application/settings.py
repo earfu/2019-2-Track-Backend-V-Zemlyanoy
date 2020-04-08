@@ -93,7 +93,7 @@ DATABASES = {
 #        'NAME': 'quack_db',
  #       'USER': 'quack',
   #      'PASSWORD': 'Not_a_duck.',
-        'HOST': '127.0.0.1',
+    #    'HOST': '127.0.0.1',
         'NAME': 'postgres',
         'USER': 'postgres',
         'HOST': 'database',
@@ -150,10 +150,18 @@ AWS_STORAGE_BUCKET_NAME = 'messanger_zemlyanoy'
 SOCIAL_AUTH_GITHUB_KEY = 'a4b206e71c1065dfca76'
 SOCIAL_AUTH_GITHUB_SECRET = 'c6486a03b357ebcf911fbc345cfa7bf00cfe607c'
 
+CENTRIFUGO_TOKEN_HMAC_SECRET_KEY = 'ebec560d-b7fe-4ce4-ac02-dcfaf25549ec'
+CENTRIFUGO_API_KEY = 'f58a4d6f-a947-4b01-af8a-ded3eafd640a'
+CENTRIFUGO_ADDRESS = 'http://events:8001' # 'events' refers to the docker-compose container name
+
 LOGIN_URL = 'login-user'
 LOGIN_REDIRECT_URL = 'chats-index'
 LOGOUT_URL = 'logout-user'
 LOGOUT_REDIRECT_URL = 'login'
+
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_DOMAIN = '127.0.0.1:8000'
+#CSRF_COOKIE_SAMESITE = 'Lax'
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.linkedin.LinkedinOAuth2',

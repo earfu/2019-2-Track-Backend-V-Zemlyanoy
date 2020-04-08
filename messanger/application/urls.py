@@ -20,7 +20,7 @@ from django.contrib.auth import login, logout
 
 from rest_framework import routers
 
-from chats.views import default_index, ChatViewSet, MessageViewSet
+from chats.views import default_index, ChatViewSet, MessageViewSet, cent_subscribe
 from users.views import UserViewSet
 from users.views import login_user, logout_user
 
@@ -38,6 +38,7 @@ urlpatterns = [
     path('contacts/', include('contacts.urls')),
     path('users/', include('users.urls')),
     path('attachments/', include('attachments.urls')),
+    path('centrifuge/subscribe/', cent_subscribe, name='centrifuge-subscribe'),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # DRF login/logout
     path('api/', include(router.urls)), # all DRF default routing

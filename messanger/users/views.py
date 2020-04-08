@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect
 
 from django.http import JsonResponse
@@ -7,9 +9,14 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 from users.models import User
 from chats.models import Chat
@@ -19,20 +26,29 @@ from users.forms import UserNewForm, UserLoginForm
 from users.serializers import UserSerializer
 
 # Create your views here.
-#def login_required(view):
- #   def wrap(*args, **kwargs):
-  #      request = args[0]
-   #     user = request.user
-    #    if user.is_authenticated:
-     #       return view(*args, **kwargs)
-      #  else:
-       #     return redirect('login-user')
-    #return wrap
+
+def login_required_unless_options(view):
+    def wrap(*args, **kwargs):
+        request = args[0]
+        if request.method == 'OPTIONS':
+            return view(*args, **kwargs)
+        else:
+            return login_required(view)(*args, **kwargs)
+    return wrap
 
 @login_required
 def user_self(request): # display user's own profile
     if request.method == 'GET':
-        return JsonResponse({'App': 'users', 'Placeholder_for': 'user\'s own profile', })
+        user = request.user
+        response = JsonResponse({'user': 'self',
+            'user_id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name
+        })
+        response['Access-Control-Allow-Credentials'] = 'true'
+        response['Access-Control-Allow-Origin'] = request.headers['Origin']
+        return response
     else:
         return HttpResponseNotAllowed(['GET'])
 
@@ -83,8 +99,24 @@ def user_seek_by_name(request, user_name): # search for user by name, exact matc
     except User.DoesNotExist:
         return HttpResponse('Placeholder for no such user')
 
+@ensure_csrf_cookie
 def login_user(request):
     if request.method == 'POST':
+        if request.is_ajax():
+            post = json.loads(request.body)
+            cpt = CaptchaStore.objects.filter(hashkey=post['captchaKey']).first()
+            if (cpt and cpt.challenge==post['captchaText']):
+                user=authenticate(request, username=post['username'], password=post['password'])
+                if user is not None:
+                    login(request, user)
+                    response = JsonResponse({'login post': 'success'})
+                else:
+                    response = JsonResponse({'login post': 'Invalid credentials'})
+            else:
+                response = JsonResponse({'login post': 'wrong at captcha'})
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Origin'] = request.headers['Origin']
+            return response
         username = request.POST['username']
         password = request.POST['password']
         user=authenticate(request, username=username, password=password)
@@ -94,10 +126,25 @@ def login_user(request):
         else:
             return HttpResponse('Invalid credentials')
     elif request.method == 'GET':
-        return render(request, 'users/login_user.html', {'form': UserLoginForm()})
+        if request.is_ajax():
+            cp_key = CaptchaStore.generate_key()
+            response = JsonResponse({'captcha_key': cp_key, 'captcha_image': captcha_image_url(cp_key), 'status': 200})
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Origin'] = request.headers['Origin']
+        else:
+            response = render(request, 'users/login_user.html', {'form': UserLoginForm()})
+        response['Access-Control-Allow-Credentials'] = 'true'
+        return response
         #return render(request, 'users/login_user.html', {'form': AuthenticationForm()})
+    elif request.method == 'OPTIONS':
+        response = HttpResponse('', status=200)
+        response['Access-Control-Allow-Origin'] = request.headers['Origin']
+        response['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With, X-CSRFToken'
+        response['Access-Control-Allow-Credentials'] = 'true'
+        return response
     else:
-        return HttpResponseNotAllowed(['GET', 'POST'])
+        return HttpResponseNotAllowed(['GET', 'POST', 'OPTIONS'])
 
 @login_required
 def logout_user(request):
