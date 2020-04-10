@@ -133,7 +133,6 @@ def login_user(request):
             response['Access-Control-Allow-Origin'] = request.headers['Origin']
         else:
             response = render(request, 'users/login_user.html', {'form': UserLoginForm()})
-        response['Access-Control-Allow-Credentials'] = 'true'
         return response
         #return render(request, 'users/login_user.html', {'form': AuthenticationForm()})
     elif request.method == 'OPTIONS':
@@ -154,19 +153,45 @@ def logout_user(request):
     else:
         return HttpResponseNotAllowed(['GET'])
 
+@ensure_csrf_cookie
 def user_new(request):
     if request.method == 'GET':
-        return render(request, 'users/new_user.html', {'form': UserNewForm()})
+        if request.is_ajax():
+            response = JsonResponse({})
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Origin'] = request.headers['Origin']
+            response['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With, X-CSRFToken'
+            return response
+        else:
+            return render(request, 'users/new_user.html', {'form': UserNewForm()})
     elif request.method == 'POST':
-        form = UserNewForm(request.POST)
+        if request.is_ajax():
+            post = json.loads(request.body)
+            form = UserNewForm({'username': post['username'], 'password1': post['password1'], 'password2': post['password2']})
+        else:
+            form = UserNewForm(request.POST)
+
         if form.is_valid():
             #user = User.objects.create_user(form.fields['username'], password=form.fields['password'])
             user = form.save(commit=True)
-            return JsonResponse({'User creation:': 'success', 'new user id:': user.id})
+            response = JsonResponse({'User creation:': 'success', 'new user id:': user.id})
         else:
-            return JsonResponse({'User creation:': 'invalid form data', 'Errors': list(form.errors.as_data())})
+            response = JsonResponse({'User creation:': 'invalid form', 'Errors': list(form.errors.as_data())})
+
+        if request.is_ajax():
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Origin'] = request.headers['Origin']
+            response['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With, X-CSRFToken'
+        return response
+    elif request.method == 'OPTIONS':
+        response = HttpResponse('', status=200)
+        response['Access-Control-Allow-Origin'] = request.headers['Origin']
+        response['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With, X-CSRFToken'
+        response['Access-Control-Allow-Credentials'] = 'true'
+        return response
     else:
-        return HttpResponseNotAllowed(['GET', 'POST'])
+        return HttpResponseNotAllowed(['GET', 'POST', 'OPTIONS'])
 
 
 

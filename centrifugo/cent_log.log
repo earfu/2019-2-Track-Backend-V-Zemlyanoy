@@ -10,3 +10,15 @@
 {"level":"info","time":"2020-04-08T17:09:22Z","message":"serving websocket, SockJS, API, admin, debug endpoints on 0.0.0.0:8001"}
 {"level":"info","time":"2020-04-08T17:09:55Z","message":"signal received: terminated"}
 {"level":"info","time":"2020-04-08T17:09:55Z","message":"shutting down ..."}
+{"level":"info","version":"2.4.0","runtime":"go1.13.8","pid":1,"engine":"Memory","gomaxprocs":2,"time":"2020-04-10T13:29:31Z","message":"starting Centrifugo"}
+{"level":"info","path":"/centrifugo/centrifugo_config.json","time":"2020-04-10T13:29:31Z","message":"using config file"}
+{"level":"warn","time":"2020-04-10T13:29:31Z","message":"DEBUG mode enabled, see /debug/pprof"}
+{"level":"info","time":"2020-04-10T13:29:31Z","message":"serving websocket, SockJS, API, admin, debug endpoints on 0.0.0.0:8001"}
+{"level":"info","time":"2020-04-10T13:31:44Z","message":"signal received: terminated"}
+{"level":"info","time":"2020-04-10T13:31:44Z","message":"shutting down ..."}
+{"level":"info","version":"2.4.0","runtime":"go1.13.8","pid":1,"engine":"Memory","gomaxprocs":2,"time":"2020-04-10T13:51:02Z","message":"starting Centrifugo"}
+{"level":"info","path":"/centrifugo/centrifugo_config.json","time":"2020-04-10T13:51:02Z","message":"using config file"}
+{"level":"warn","time":"2020-04-10T13:51:02Z","message":"DEBUG mode enabled, see /debug/pprof"}
+{"level":"info","time":"2020-04-10T13:51:02Z","message":"serving websocket, SockJS, API, admin, debug endpoints on 0.0.0.0:8001"}
+{"level":"info","time":"2020-04-10T13:57:46Z","message":"signal received: terminated"}
+{"level":"info","time":"2020-04-10T13:57:46Z","message":"shutting down ..."}
