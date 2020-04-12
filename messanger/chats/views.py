@@ -25,6 +25,7 @@ from attachments.models import Attachment
 from users.views import login_required_unless_options
 
 from chats.serializers import ChatSerializer, MessageSerializer
+from chats.tasks import chat_mail_note
 
 # Create your views here.
 
@@ -158,6 +159,8 @@ def create_chat(request): # not used yet
                 cent_client.publish('chats#' + str(user.id), {'id': chat.id, 'name': chat.name})
             except cent.CentException:
                 pass
+            if (user.email is not None):
+                chat_mail_note(user.username, chat.name, user.email)
 
         else:
             response = JsonResponse({'Chat creation': 'invalid form', })

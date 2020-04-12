@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -142,6 +143,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_S3_ENDPOINT_URL = 'http://hb.bizmrg.com'
 AWS_ACCESS_KEY_ID = 'tHwmMmsEpYjEpxBRQ3FefU'
@@ -154,6 +157,20 @@ SOCIAL_AUTH_GITHUB_SECRET = 'c6486a03b357ebcf911fbc345cfa7bf00cfe607c'
 CENTRIFUGO_TOKEN_HMAC_SECRET_KEY = 'ebec560d-b7fe-4ce4-ac02-dcfaf25549ec'
 CENTRIFUGO_API_KEY = 'f58a4d6f-a947-4b01-af8a-ded3eafd640a'
 CENTRIFUGO_ADDRESS = 'http://events:8001' # 'events' refers to the docker-compose container name
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+  'count': {
+    'task': 'users.tasks.count_users',
+    'schedule': crontab()
+  }
+}
+
 
 LOGIN_URL = 'login-user'
 LOGIN_REDIRECT_URL = 'chats-index'

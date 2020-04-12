@@ -17,6 +17,10 @@ services:
     command: python messanger/manage.py runserver 0.0.0.0:8000
     depends_on:
       - database
+      - redis
+      - celery
+      - flower
+      - beat
   events:
     image: centrifugo/centrifugo:latest
     expose:
@@ -32,3 +36,41 @@ services:
     command: centrifugo -c centrifugo_config.json --admin --debug
     depends_on:
       - django
+  celery:
+    build: .
+    volumes:
+      - ./messanger:/messanger
+    working_dir: /messanger
+    command: celery -A application worker -l info
+    depends_on:
+      - database
+      - redis
+  beat:
+    build: .
+    volumes:
+      - ./messanger:/messanger
+    working_dir: /messanger
+    command: celery -A application beat -l info
+    depends_on:
+      - database
+      - redis
+  flower:
+    build: .
+    volumes:
+      - ./messanger:/messanger
+    ports:
+      - "5555:5555"
+    working_dir: /messanger
+    command: flower -A application
+    depends_on:
+      - database
+      - redis
+  redis:
+    image: redis
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data/redis
+    command: redis-server /data/redis/redis.conf
