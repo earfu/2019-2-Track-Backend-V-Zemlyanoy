@@ -5,7 +5,8 @@ Start:
 - `cd 2019-2-Track-Backend-V-Zemlyanoy`
 - `docker-compose build`
 - `docker-compose up`
-- `make migrate`
+- `make migrate` [with docker-compose still up;]
+- [repeat `docker-compose up` to use the migrations]
 
 Configuration files:
 - ./messanger/application/settings.py
